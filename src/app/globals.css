@@ -26,3 +26,8 @@
 .font-chewy {
   font-family: var(--font-chewy);
 }
+
+.writing-vertical {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+}
