@@ -90,16 +90,6 @@ export default function ContactPage() {
       </section>
 
       <div className="w-11/12 md:w-5/6 mx-auto">
-        <h2 className="  text-md text-[var(--secondary-color)]">
-          Have questions, need marketing advice, or interested in growing your
-          brand online?
-        </h2>
-        <p className=" text-md text-gray-400">
-          Reach out to us via email, phone, or simply fill out the form below.
-          Your inquiry will be directed to the right Bigwig Digital marketing
-          expert, and we’ll get back to you within 24 hours.
-        </p>
-
         <div className="flex flex-col md:flex-row justify-center items-start py-8 gap-10 mb-7  ">
           {/* Form Section */}
           {/* <div className="w-full md:w-1/2 max-w-lg bg-gray-100 rounded-lg p-8 shadow-lg text-left  border border-[var(--primary-color)]">

@@ -123,7 +123,7 @@ const BlogDetails: React.FC<BlogDetailsProps> = ({ params }) => {
           />
 
           <div
-            className="prose prose-md max-w-none"
+            className="blog-content"
             dangerouslySetInnerHTML={{ __html: blog.content }}
           />
         </div>
