@@ -191,7 +191,7 @@ export default function PropertyForm({
             name="description"
             value={formData.description || ""}
             onChange={handleChange}
-            className="w-full rounded-lg p-3 border border-gray-300 focus:ring text-black"
+            className="w-full rounded-lg p-3 border border-gray-300 focus:ring text-white"
             rows={4}
             required
           />
@@ -316,7 +316,7 @@ export default function PropertyForm({
               value={arrayInputs[field]}
               onChange={handleArrayChange}
               placeholder={`Enter ${fieldLabels[field]} (comma separated)`}
-              className="w-full rounded-lg p-3 border border-gray-300 focus:ring text-black"
+              className="w-full rounded-lg p-3 border border-gray-300 focus:ring text-white"
             />
           </div>
         ))}
@@ -354,28 +354,14 @@ export default function PropertyForm({
           disabled={loading}
         >
           {loading && (
-            <svg
-              className="animate-spin h-5 w-5 text-white"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-              ></circle>
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-              ></path>
-            </svg>
+            <span className="text-white">
+              {property ? "Updating..." : "Adding..."}
+            </span>
           )}
-          {property ? "Update Property" : "Add Property"}
+
+          {!loading && (
+            <span>{property ? "Update Property" : "Add Property"}</span>
+          )}
         </button>
       </div>
     </form>
@@ -410,7 +396,7 @@ function InputField({
         onChange={onChange}
         placeholder={placeholder}
         min={0}
-        className="w-full rounded-lg p-3 border border-gray-300 focus:ring text-black"
+        className="w-full rounded-lg p-3 border border-gray-300 focus:ring text-white"
         required={required}
       />
     </div>
