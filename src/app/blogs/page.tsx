@@ -32,7 +32,7 @@ const Blogs = () => {
     setLoading(true);
     try {
       const res = await axios.get<BlogPost[]>(
-        `${process.env.NEXT_PUBLIC_API_BASE}/viewblog`
+        `${process.env.NEXT_PUBLIC_API_BASE}/blog/viewblog`
       );
       setBlogs(res.data);
       setFilteredBlogs(res.data);
@@ -73,84 +73,95 @@ const Blogs = () => {
     <div className="min-h-screen bg-white text-black">
       <Nav />
 
-      <div className="w-11/12 md:w-5/6 mx-auto flex flex-col md:flex-row gap-6 pt-[80px] md:pt-[128px]">
-        {/* Blogs Section */}
-        <div className="flex-1 h-[calc(100vh-120px)] overflow-y-auto no-scrollbar pr-4">
-          {/* Search */}
-          <div className="mb-4">
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search by title or author"
-              className="w-full p-3 border border-gray-300 rounded-lg bg-white text-black focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)]"
-            />
-          </div>
+      <div className="w-11/12 md:w-5/6 mx-auto flex flex-col gap-8 pt-[80px] md:pt-[128px]">
+        {/* Search Bar */}
+        <div className="sticky top-[80px] z-10 bg-white py-2">
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="🔍 Search blogs by title or author"
+            className="w-full p-3 border border-gray-300 rounded-lg bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)]"
+          />
+        </div>
 
-          {/* Blogs Grid */}
-          {loading ? (
-            <div className="flex flex-col justify-center items-center min-h-[50vh]">
+        {/* Blog Cards */}
+        {loading ? (
+          <div className="flex flex-col justify-center items-center min-h-[50vh]">
+            <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-3" />
+            <p className="text-gray-600 text-lg">Loading blogs...</p>
+          </div>
+        ) : currentBlogs.length === 0 ? (
+          <p className="text-center text-gray-500 mt-10">No blogs found.</p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {currentBlogs.map((blog) => (
               <div
-                className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-2"
-                role="status"
-                aria-label="Loading"
-              />
-              <p className="text-gray-600 text-lg">Loading blogs...</p>
-            </div>
-          ) : currentBlogs.length === 0 ? (
-            <p className="text-center text-gray-500 mt-10">No blogs found.</p>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {currentBlogs.map((blog) => (
-                <div
-                  key={blog._id}
-                  onClick={() => router.push(`/blogs/${blog.slug}`)}
-                  className="bg-white rounded-xl shadow-md overflow-hidden cursor-pointer hover:shadow-xl transition-shadow duration-300"
-                >
+                key={blog._id}
+                onClick={() => router.push(`/blogs/${blog.slug}`)}
+                className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 cursor-pointer group border border-gray-200"
+              >
+                {/* Image Section */}
+                <div className="relative w-full h-56 overflow-hidden">
                   <Image
                     src={blog.coverImage}
                     alt={blog.title}
-                    className="w-full h-48 md:h-56 object-cover"
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
                   />
-                  <div className="p-4">
-                    <h2 className="text-lg md:text-xl font-semibold mb-1">
+                </div>
+
+                {/* Content Section */}
+                <div className="p-5 flex flex-col justify-between h-[180px]">
+                  <div>
+                    <h2 className="text-xl font-semibold mb-2 line-clamp-2 group-hover:text-[var(--primary-color)] transition-colors">
                       {blog.title}
                     </h2>
-                    <p className="text-sm text-gray-500 mb-1">
+                    <p className="text-gray-600 text-sm mb-1">
                       {new Date(blog.datePublished).toLocaleDateString()}
                     </p>
-                    <p className="text-sm text-gray-700">
-                      By <strong>{blog.author}</strong>
+                    <p className="text-gray-800 text-sm">
+                      By <span className="font-medium">{blog.author}</span>
                     </p>
                   </div>
-                </div>
-              ))}
-            </div>
-          )}
 
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="flex justify-center mt-6 space-x-2 flex-wrap gap-2">
-              {[...Array(totalPages)].map((_, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setCurrentPage(idx + 1)}
-                  className={`px-4 py-2 rounded-lg border transition-colors duration-200 ${
-                    currentPage === idx + 1
-                      ? "bg-[var(--primary-color)] text-white border-[var(--primary-color)]"
-                      : "bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200"
-                  }`}
-                >
-                  {idx + 1}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+                  <button
+                    className="mt-4 self-start text-[var(--primary-color)] font-semibold hover:underline transition"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      router.push(`/blogs/${blog.slug}`);
+                    }}
+                  >
+                    Read More →
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex justify-center mt-8 space-x-2 flex-wrap gap-2">
+            {[...Array(totalPages)].map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => setCurrentPage(idx + 1)}
+                className={`px-4 py-2 rounded-lg border font-medium transition-colors duration-200 ${
+                  currentPage === idx + 1
+                    ? "bg-[var(--primary-color)] text-white border-[var(--primary-color)]"
+                    : "bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200"
+                }`}
+              >
+                {idx + 1}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* Call-to-Action */}
-      <div className="bg-[var(--primary-color)] text-white text-center py-12 px-4 mt-12">
+      {/* Call-to-Action Section */}
+      <div className="bg-[var(--primary-color)] text-white text-center py-16 px-6 mt-20 rounded-t-3xl">
         <h2 className="text-3xl md:text-4xl font-bold mb-4">
           Ready to Start Your Dream Project?
         </h2>
@@ -160,7 +171,7 @@ const Blogs = () => {
         </p>
         <button
           onClick={() => setIsPopupOpen(true)}
-          className="bg-white text-[var(--primary-color)] px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition"
+          className="bg-white text-[var(--primary-color)] px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition"
         >
           Get Started
         </button>

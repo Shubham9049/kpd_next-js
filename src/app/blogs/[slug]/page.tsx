@@ -6,6 +6,7 @@ import axios from "axios";
 import Navbar from "../../../../components/Nav";
 import Footer from "../../../../components/Footer";
 import PopupForm from "../../../../components/PopUpForm";
+import Image from "next/image";
 
 interface BlogType {
   title: string;
@@ -26,6 +27,7 @@ interface BlogDetailsProps {
 const BlogDetails: React.FC<BlogDetailsProps> = ({ params }) => {
   const { slug } = params;
   const router = useRouter();
+
   const [blog, setBlog] = useState<BlogType | null>(null);
   const [relatedBlogs, setRelatedBlogs] = useState<BlogType[]>([]);
   const [loading, setLoading] = useState(false);
@@ -41,18 +43,17 @@ const BlogDetails: React.FC<BlogDetailsProps> = ({ params }) => {
 
       try {
         const res = await axios.get<BlogType[]>(
-          `${process.env.NEXT_PUBLIC_API_BASE}/viewblog`
+          `${process.env.NEXT_PUBLIC_API_BASE}/blog/viewblog`
         );
         const blogList = res.data;
-
         const found = blogList.find((b) => b.slug === slug);
+
         if (!found) {
           setError("Blog not found");
           setBlog(null);
         } else {
           setBlog(found);
 
-          // Related blogs: same category, exclude current
           const related = blogList
             .filter(
               (b) =>
@@ -76,10 +77,7 @@ const BlogDetails: React.FC<BlogDetailsProps> = ({ params }) => {
   if (loading)
     return (
       <div className="flex flex-col justify-center items-center min-h-screen bg-white">
-        <div
-          className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-4"
-          role="status"
-        />
+        <div className="w-12 h-12 border-4 border-[var(--primary-color)] border-t-transparent rounded-full animate-spin mb-4" />
         <p className="text-gray-600 text-lg">Loading blog content...</p>
       </div>
     );
@@ -95,7 +93,7 @@ const BlogDetails: React.FC<BlogDetailsProps> = ({ params }) => {
 
   return (
     <div className="bg-white text-black min-h-screen">
-      {/* JSON-LD schema */}
+      {/* SEO Schema */}
       {Array.isArray(blog.schemaMarkup) &&
         blog.schemaMarkup.map((markup, idx) => (
           <script
@@ -107,74 +105,88 @@ const BlogDetails: React.FC<BlogDetailsProps> = ({ params }) => {
 
       <Navbar />
 
-      <div className="max-w-7xl mx-auto px-4 py-10 flex flex-col lg:flex-row gap-8 pt-[80px] md:pt-[128px]">
-        {/* Blog Content */}
-        <div className="w-full lg:w-3/4">
-          <h1 className="text-3xl md:text-4xl font-bold mb-4">{blog.title}</h1>
-          <p className="text-gray-600 mb-2 text-sm md:text-base">
-            By <strong>{blog.author}</strong> -{" "}
-            {new Date(blog.datePublished).toLocaleDateString()}
-          </p>
+      {/* Blog Header Section */}
+      <div className="w-11/12 md:w-5/6 mx-auto pt-[100px] md:pt-[140px] text-left">
+        <h1 className="text-3xl md:text-5xl font-bold text-gray-900 leading-tight mb-3">
+          {blog.title}
+        </h1>
+        <p className="text-gray-500 text-sm md:text-base mb-6">
+          By <span className="font-semibold text-gray-800">{blog.author}</span>{" "}
+          • {new Date(blog.datePublished).toLocaleDateString()}
+        </p>
+      </div>
 
-          <img
-            src={blog.coverImage}
-            alt={`Cover for ${blog.title}`}
-            className="mb-6 w-full rounded object-cover"
-          />
+      {/* Full-width Feature Image */}
+      <div className="relative w-11/12 md:w-5/6 mx-auto h-[300px] md:h-[500px] overflow-hidden rounded-xl">
+        <Image
+          src={blog.coverImage}
+          alt={blog.title}
+          fill
+          className="object-cover"
+          priority
+        />
+      </div>
 
-          <div
-            className="blog-content"
-            dangerouslySetInnerHTML={{ __html: blog.content }}
-          />
-        </div>
+      {/* Blog Content Section */}
+      <div className="w-11/12 md:w-5/6 mx-auto">
+        {/* Blog Main Content */}
+
+        <div
+          className=" blog-content"
+          dangerouslySetInnerHTML={{ __html: blog.content }}
+        />
 
         {/* Related Blogs */}
         {relatedBlogs.length > 0 && (
-          <div className="w-full lg:w-1/4">
-            <h2 className="text-2xl font-semibold mb-4">Related Blogs</h2>
-            <div className="grid grid-cols-1 gap-4">
+          <aside className="lg:col-span-1 bg-gray-50 p-5 rounded-2xl shadow-sm h-fit">
+            <h2 className="text-2xl font-semibold mb-4 text-gray-900 border-b border-gray-200 pb-2">
+              Related Blogs
+            </h2>
+            <div className="space-y-5">
               {relatedBlogs.map((relBlog) => (
                 <div
                   key={relBlog.slug}
-                  className="border rounded-lg overflow-hidden shadow hover:shadow-lg cursor-pointer transition"
                   onClick={() => router.push(`/blogs/${relBlog.slug}`)}
+                  className="cursor-pointer group"
                 >
-                  <img
-                    src={relBlog.coverImage}
-                    alt={relBlog.title}
-                    className="w-full h-36 object-cover"
-                  />
-                  <div className="p-3">
-                    <h3 className="text-lg font-semibold">{relBlog.title}</h3>
-                    <p className="text-sm text-gray-600">
-                      {new Date(relBlog.datePublished).toLocaleDateString()}
-                    </p>
+                  <div className="overflow-hidden rounded-lg shadow-sm mb-2">
+                    <img
+                      src={relBlog.coverImage}
+                      alt={relBlog.title}
+                      className="w-full h-32 object-cover rounded-lg group-hover:scale-105 transition-transform duration-500"
+                    />
                   </div>
+                  <h3 className="text-base font-semibold text-gray-800 group-hover:text-[var(--primary-color)] transition-colors leading-snug line-clamp-2">
+                    {relBlog.title}
+                  </h3>
+                  <p className="text-sm text-gray-500">
+                    {new Date(relBlog.datePublished).toLocaleDateString()}
+                  </p>
                 </div>
               ))}
             </div>
-          </div>
+          </aside>
         )}
       </div>
 
-      <div className="bg-[var(--primary-color)] text-white text-center py-10 px-4 mt-12">
-        <h2 className="text-3xl font-bold mb-4">
+      {/* CTA Section */}
+      <section className="bg-[var(--primary-color)] text-white text-center py-16 px-6 mt-20">
+        <h2 className="text-3xl md:text-4xl font-bold mb-4">
           Ready to Start Your Dream Project?
         </h2>
-        <p className="max-w-2xl mx-auto mb-6 text-lg">
+        <p className="max-w-2xl mx-auto mb-8 text-lg md:text-xl">
           Let’s bring your vision to life with our expert team. Get in touch
           today and take the first step toward your future.
         </p>
         <button
           onClick={() => setIsPopupOpen(true)}
-          className="bg-white text-[var(--primary-color)] px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition"
+          className="bg-white text-[var(--primary-color)] px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition"
         >
           Get Started
         </button>
-      </div>
+      </section>
 
       {isPopupOpen && <PopupForm onClose={() => setIsPopupOpen(false)} />}
-
       <Footer />
     </div>
   );
