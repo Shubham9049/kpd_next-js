@@ -43,7 +43,7 @@ const Navbar: React.FC = () => {
       </div>
 
       {/* Main Header */}
-      <div className="flex items-center justify-between py-3 w-11/12 md:w-5/6 mx-auto">
+      <div className="flex items-center justify-between w-11/12 md:w-5/6 mx-auto">
         {/* ✅ Logo aligned left */}
         <div className="flex items-center">
           <a href="/" className="flex items-center">
