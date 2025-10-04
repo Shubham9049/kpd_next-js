@@ -97,6 +97,8 @@ export default function BuyPage() {
           src={banner}
           alt="Buy Property"
           className="absolute inset-0 w-full h-full object-cover opacity-70 blur-sm"
+          width={200}
+          height={100}
         />
         <motion.div
           className="relative z-10 text-center"
@@ -163,6 +165,8 @@ export default function BuyPage() {
                           src={p.images[0]}
                           alt={p.title}
                           className="object-cover w-full h-full"
+                          width={200}
+                          height={100}
                         />
                       ) : (
                         <div className="h-64 flex items-center justify-center bg-gray-100 text-gray-400">
