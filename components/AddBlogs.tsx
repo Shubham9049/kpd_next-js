@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import ReactQuill from "react-quill-new";
-import "react-quill/dist/quill.snow.css";
+import "react-quill-new/dist/quill.snow.css";
 
 interface BlogPost {
   _id?: string;
@@ -286,8 +286,8 @@ const AddBlog = ({
                   ? "Updating..."
                   : "Adding..."
                 : existingBlog
-                ? "Update"
-                : "Submit"}
+                  ? "Update"
+                  : "Submit"}
             </button>
           </div>
         </form>
