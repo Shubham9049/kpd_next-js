@@ -1,8 +1,10 @@
 "use client";
-import React from "react";
-import Slider from "react-slick";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
+
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, Pagination } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/pagination";
+import { FaQuoteLeft } from "react-icons/fa";
 
 const testimonials = [
   {
@@ -47,72 +49,70 @@ const testimonials = [
   },
 ];
 
-const Testimonials: React.FC = () => {
-  const settings = {
-    dots: true,
-    infinite: true,
-    speed: 600,
-    autoplay: true,
-    autoplaySpeed: 4000,
-    slidesToShow: 3,
-    slidesToScroll: 1,
-
-    responsive: [
-      {
-        breakpoint: 1024, // Tablet
-        settings: { slidesToShow: 2, slidesToScroll: 1 },
-      },
-      {
-        breakpoint: 768, // Mobile
-        settings: { slidesToShow: 1, slidesToScroll: 1 },
-      },
-    ],
-    appendDots: (dots: React.ReactNode) => (
-      <div className="mt-2">
-        <ul className="flex justify-center m-0">{dots}</ul>
-      </div>
-    ),
-    customPaging: () => (
-      <div className="w-2.5 h-2.5 rounded-full bg-[var(--primary-color)]" />
-    ),
-  };
-
+export default function Testimonials() {
   return (
-    <section className="py-12 bg-gray-50">
-      {/* Header */}
-      <div className="w-11/12 max-w-6xl mx-auto mb-8 px-4">
-        <p className="uppercase tracking-widest text-gray-500 text-sm mb-1">
-          Testimonial
+    <section className="w-full py-16 font-raleway bg-gray-50 text-black relative">
+      <div className="w-11/12 md:w-5/6 mx-auto">
+        {/* Section Label */}
+        <p className="text-gray-500 text-xs tracking-widest uppercase font-semibold text-start">
+          Testimonials
         </p>
-        <h2 className="text-2xl md:text-3xl font-bold text-[var(--primary-color)] border-l-4 border-[var(--primary-color)] pl-3 font-amatic">
+
+        {/* Heading */}
+        <h2 className="text-2xl md:text-4xl font-semibold text-[var(--primary-color)] mt-2 text-start mb-8 border-l-4 border-[var(--primary-color)] pl-3 font-amatic">
           WHAT PEOPLE SAY
         </h2>
-      </div>
 
-      {/* Slider */}
-      <div className="w-11/12 max-w-6xl mx-auto">
-        <Slider {...settings}>
+        {/* Swiper Slider */}
+        <Swiper
+          modules={[Autoplay, Pagination]}
+          spaceBetween={30}
+          slidesPerView={3}
+          loop
+          centeredSlides
+          autoplay={{
+            delay: 3000,
+            disableOnInteraction: false,
+            pauseOnMouseEnter: true,
+          }}
+          pagination={{ clickable: true }}
+          breakpoints={{
+            320: { slidesPerView: 1 },
+            768: { slidesPerView: 2 },
+            1024: { slidesPerView: 3 },
+          }}
+          className="pb-12"
+        >
           {testimonials.map((testimonial, index) => (
-            <div key={index} className="px-3">
-              <div className="bg-white border border-gray-200 rounded-xl p-6 min-h-[250px] flex flex-col justify-between shadow-md transition-transform hover:-translate-y-1 hover:shadow-lg">
-                <div>
-                  <span className="text-5xl text-[var(--primary-color)] leading-none font-serif">
-                    “
-                  </span>
-                  <p className="mt-3 text-gray-700  md:text-md leading-relaxed font-annie">
-                    {testimonial.message}
-                  </p>
-                </div>
-                <p className="mt-6 text-sm font-semibold text-[var(--primary-color)]">
-                  — {testimonial.name}
+            <SwiperSlide key={index}>
+              <div className="bg-white rounded-2xl border border-neutral-200 p-6 shadow-md h-72 flex flex-col justify-between hover:shadow-lg transition duration-300 relative">
+                {/* Quote Icon */}
+                <FaQuoteLeft className="text-[var(--primary-color)] text-3xl opacity-30 mb-3" />
+
+                {/* Message */}
+                <p className="text-base leading-relaxed text-gray-700 font-annie line-clamp-5">
+                  {testimonial.message}
                 </p>
+
+                {/* Footer */}
+                <div className="mt-6 flex items-center justify-between">
+                  <h3 className="text-sm font-bold uppercase tracking-wide text-[var(--primary-color)]">
+                    — {testimonial.name}
+                  </h3>
+
+                  {/* Initials Avatar */}
+                  <div className="w-10 h-10 rounded-full bg-[var(--primary-color)] text-white flex items-center justify-center text-sm font-bold uppercase">
+                    {testimonial.name
+                      .split(" ")
+                      .map((n) => n[0])
+                      .join("")}
+                  </div>
+                </div>
               </div>
-            </div>
+            </SwiperSlide>
           ))}
-        </Slider>
+        </Swiper>
       </div>
     </section>
   );
-};
-
-export default Testimonials;
+}
